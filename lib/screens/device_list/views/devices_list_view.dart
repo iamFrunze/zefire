@@ -1,19 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_blue/flutter_blue.dart';
-import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart' as asd;
-import 'package:zefire/helpers/bluetooth_manager.dart';
 import 'package:zefire/resources/strings.dart';
+import 'package:zefire/screens/connection_device/connection_device_screen.dart';
 
-Widget DevicesList(List<BluetoothDevice> arrayOfResult) {
+Widget DevicesList(List<ScanResult> arrayOfResult) {
   return Expanded(
     child: ListView.builder(
         itemCount: arrayOfResult.length,
         itemBuilder: (context, index) {
           return GestureDetector(
             onTap: () async {
-              BluetoothManager.currentDevice = arrayOfResult[index];
-              await Navigator.pushNamed(
-                  context, Strings.routeToConnectionStateScreen);
+              var device = arrayOfResult[index].device;
+              await Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ConnectionDeviceScreen(
+                    device: device,
+                  ),
+                ),
+              );
             },
             child: Container(
               decoration: BoxDecoration(
@@ -31,7 +36,7 @@ Widget DevicesList(List<BluetoothDevice> arrayOfResult) {
                       child: Container(
                         margin: const EdgeInsets.only(right: 16),
                         child: Text(
-                          arrayOfResult[index].name ?? "Unknown device",
+                          arrayOfResult[index].device.name ?? "Unknown device",
                           style: Theme.of(context).textTheme.headline1,
                         ),
                       ),

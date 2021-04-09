@@ -24,28 +24,24 @@ class ConnectionDeviceBloc
 
   @override
   Stream<ConnectionDeviceState> mapEventToState(
-    ConnectionDeviceEvent event,
-  ) async* {
-    switch (event.runtimeType) {
-      case GetConnectionEvent:
-        {
-          BluetoothDevice zefire = null;
-          yield ConnectionDeviceInitial();
-          try {
-            if (BluetoothManager.currentDevice == null)
-              yield ConnectionFailureState();
-            else {
-              zefire = BluetoothManager.currentDevice;
-              if (await zefire.canSendWriteWithoutResponse)
-                yield ConnectionSuccessState();
-              else
-                yield ConnectionFailureState();
-            }
-          } catch (e) {
-            print("error  ${e.toString()}");
-            yield ConnectionFailureState();
-          }
-        }
+      ConnectionDeviceEvent event,) async* {
+    if (event is GetConnectionEvent) {
+      BluetoothDevice zefire = event.device;
+      await zefire.connect();
+      yield ConnectionDeviceInitial();
+      try {
+        zefire.state.listen((event) {
+          print("STATE IS $event");
+          if (event == BluetoothDeviceState.connected)
+            emit(ConnectionSuccessState());
+          else
+            emit(ConnectionFailureState());
+        });
+
+      } catch (e) {
+        print("error  ${e.toString()}");
+        yield ConnectionFailureState();
+      }
     }
   }
 }

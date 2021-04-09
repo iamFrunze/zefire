@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
+import 'package:flutter_blue/flutter_blue.dart';
+
+// import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
 import 'package:zefire/helpers/dialog_error.dart';
 import 'package:zefire/main.dart';
 import 'package:zefire/resources/strings.dart';
@@ -14,10 +16,19 @@ class DeviceListScreen extends StatefulWidget {
   _DeviceListScreenState createState() => _DeviceListScreenState();
 }
 
-class _DeviceListScreenState extends State<DeviceListScreen> with RouteAware {
+class _DeviceListScreenState extends State<DeviceListScreen>  {
   DevicesListBloc _bloc;
 
-  List<BluetoothDevice> arrayOfDevice = List<BluetoothDevice>();
+  List<BluetoothDevice> arrayOfDevice = [];
+
+  FlutterBlue flutterBlue = FlutterBlue.instance;
+  @override
+  void initState() {
+    super.initState();
+    _bloc = DevicesListBloc();
+    _bloc.add(DevicesDiscoveryEvent());
+    flutterBlue.startScan();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +42,7 @@ class _DeviceListScreenState extends State<DeviceListScreen> with RouteAware {
                 Strings.retry, null);
           }
           if (state is DeviceListEmptyState) {
-            _bloc.add(DevicesDiscoveryEvent());
+            // _bloc.add(DevicesDiscoveryEvent());
           }
         },
         child: BlocBuilder(
@@ -75,38 +86,14 @@ class _DeviceListScreenState extends State<DeviceListScreen> with RouteAware {
     );
   }
 
-  @override
-  void didPopNext() {
-    _bloc = DevicesListBloc();
-    _bloc.add(DevicesDiscoveryEvent());
-  }
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    routeObserver.subscribe(this, ModalRoute.of(context));
-  }
 
   @override
   void dispose() async {
     _bloc.close();
-    routeObserver.unsubscribe(this);
+    flutterBlue.stopScan();
     super.dispose();
   }
 
-  @override
-  void didPush() {
-    _bloc = DevicesListBloc();
-    _bloc.add(DevicesDiscoveryEvent());
-  }
 
-  @override
-  void didPop() {
-    _bloc.close();
-  }
 
-  @override
-  void didPushNext() {
-    _bloc.close();
-  }
 }

@@ -16,7 +16,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-        initialRoute: Strings.routeToStartScreen,
+        initialRoute: Strings.routeToDeviceSearchScreen,
         navigatorObservers: [routeObserver],
         routes: {
           Strings.routeToStartScreen: (BuildContext context) => StartScreen(),

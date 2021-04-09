@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_blue/flutter_blue.dart';
 import 'package:zefire/screens/connection_device/bloc/connection_device_bloc.dart';
 import 'package:zefire/screens/connection_device/views/failure_state.dart';
 import 'package:zefire/screens/connection_device/views/success_state.dart';
@@ -7,15 +8,28 @@ import 'package:zefire/screens/connection_device/views/success_state.dart';
 import '../../main.dart';
 
 class ConnectionDeviceScreen extends StatefulWidget {
+  BluetoothDevice device;
+
+  ConnectionDeviceScreen({@required this.device});
+
   @override
   State<StatefulWidget> createState() {
     return ConnectionDeviceScreenState();
   }
 }
 
-class ConnectionDeviceScreenState extends State<ConnectionDeviceScreen>
-    with RouteAware {
+class ConnectionDeviceScreenState extends State<ConnectionDeviceScreen> {
   ConnectionDeviceBloc _bloc;
+
+  BluetoothDevice _device;
+
+  @override
+  void initState() {
+    super.initState();
+    _bloc = ConnectionDeviceBloc();
+    _device = widget.device;
+    _bloc.add(GetConnectionEvent(device: _device));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -45,39 +59,8 @@ class ConnectionDeviceScreenState extends State<ConnectionDeviceScreen>
   }
 
   @override
-  void didPopNext() {
-    _bloc = ConnectionDeviceBloc();
-
-    _bloc.add(GetConnectionEvent());
-  }
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    routeObserver.subscribe(this, ModalRoute.of(context));
-  }
-
-  @override
   void dispose() async {
     _bloc.close();
-    routeObserver.unsubscribe(this);
     super.dispose();
-  }
-
-  @override
-  void didPush() {
-    _bloc = ConnectionDeviceBloc();
-
-    _bloc.add(GetConnectionEvent());
-  }
-
-  @override
-  void didPop() {
-    _bloc.close();
-  }
-
-  @override
-  void didPushNext() {
-    _bloc.close();
   }
 }

@@ -8,7 +8,7 @@ class DevicesListInitial extends DevicesListState {}
 class DeviceListEmptyState extends DevicesListState {}
 
 class DeviceListLoadedState extends DevicesListState {
-  final List<BluetoothDevice> arrayOfResult;
+  final List<ScanResult> arrayOfResult;
 
   DeviceListLoadedState({this.arrayOfResult});
 }

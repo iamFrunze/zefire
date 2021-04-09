@@ -7,7 +7,7 @@ class DevicesDiscoveryEvent extends DevicesListEvent {}
 
 class UpdateDiscoveryListEvent extends DevicesListEvent{
 
-  BluetoothDevice device;
+  List<ScanResult> device;
   UpdateDiscoveryListEvent({this.device});
 
 }

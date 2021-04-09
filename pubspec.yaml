@@ -26,6 +26,7 @@ dependencies:
   url_launcher: ^6.0.3
   hexcolor: ^2.0.3
   throttling: ^1.0.0
+  rxdart: ^0.26.0
 
   flutter_blue: ^0.8.0
   flutter_bluetooth_serial: ^0.2.2
